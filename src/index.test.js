@@ -232,6 +232,26 @@ describe('handleSubmit', () => {
         img.addEventListener('click', (event) => {
             handleClick(newRamen, event);
         });
+
+        beforeEach(() => {
+  document.body.innerHTML = `
+    <div id="ramen-menu"></div>
+    <div id="ramen-detail">
+      <img class="detail-image" />
+      <h2 class="name"></h2>
+      <h3 class="restaurant"></h3>
+    </div>
+    <form id="new-ramen">
+      <input name="name" />
+      <input name="restaurant" />
+      <input name="image" />
+      <input name="rating" />
+      <textarea name="comment"></textarea>
+      <button type="submit">Submit</button>
+    </form>
+  `;
+});
+
         fireEvent.click(img);
 
         const detailImg = document.querySelector("#ramen-detail > .detail-image");
@@ -246,4 +266,24 @@ describe('handleSubmit', () => {
         expect(detailsRating.textContent).toBe(newRamen.rating.toString());
         expect(detailsComment.textContent).toBe(newRamen.comment);
     })
+    global.fetch = vi.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve([
+      { id: 1, name: "Ramen 1", restaurant: "Rest 1", image: "img1.jpg", rating: 5, comment: "Great" },
+      { id: 2, name: "Ramen 2", restaurant: "Rest 2", image: "img2.jpg", rating: 4, comment: "Good" },
+      { id: 3, name: "Ramen 3", restaurant: "Rest 3", image: "img3.jpg", rating: 3, comment: "Okay" },
+      { id: 4, name: "Ramen 4", restaurant: "Rest 4", image: "img4.jpg", rating: 2, comment: "Meh" },
+      { id: 5, name: "Ramen 5", restaurant: "Rest 5", image: "img5.jpg", rating: 1, comment: "Bad" }
+    ])
+  })
+);
+//import { displayRamens } from './index.js'
+const { displayRamens } = require('./index.js');
+
+test("displayRamens should add ramen images", async () => {
+  await displayRamens();
+  const images = document.querySelectorAll('#ramen-menu img');
+  expect(images.length).toBe(5);
+});
+
 })
